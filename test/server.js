@@ -3180,11 +3180,18 @@ describe("server", () => {
   });
 
   describe("remoteAddress", () => {
+    const POSSIBLE_VALUES = [
+      "0000:0000:0000:0000:0000:0000:0000:0001",
+      "0000:0000:0000:0000:0000:ffff:7f00:0001",
+      "::ffff:127.0.0.1",
+      "::1"
+    ];
+
     it("should be defined (polling)", done => {
       const engine = listen({ transports: ["polling"] }, port => {
         eioc("ws://localhost:%d".s(port), { transports: ["polling"] });
         engine.on("connection", socket => {
-          expect(socket.remoteAddress).to.be("::ffff:127.0.0.1");
+          expect(POSSIBLE_VALUES).to.contain(socket.remoteAddress);
           done();
         });
       });
@@ -3194,7 +3201,7 @@ describe("server", () => {
       const engine = listen({ transports: ["websocket"] }, port => {
         eioc("ws://localhost:%d".s(port), { transports: ["websocket"] });
         engine.on("connection", socket => {
-          expect(socket.remoteAddress).to.be("::ffff:127.0.0.1");
+          expect(POSSIBLE_VALUES).to.contain(socket.remoteAddress);
           done();
         });
       });
